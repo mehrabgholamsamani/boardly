@@ -1,0 +1,390 @@
+:root{
+  --paper: #f6f1e7;
+  --paper-2: #efe7d7;
+  --ink: rgba(18,18,22,.92);
+  --dock: rgba(18,18,22,.70);
+  --dock-2: rgba(18,18,22,.55);
+  --dock-border: rgba(255,255,255,.10);
+  --dock-shadow: 0 18px 46px rgba(0,0,0,.35);
+  --radius: 22px;
+}
+
+/* Prevent controls from spilling out of the dock (default is content-box) */
+*, *::before, *::after{ box-sizing: border-box; }
+
+.app{
+  height: 100%;
+  background: var(--paper);
+}
+
+.stage{
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Paper look (warm + subtle grain) */
+.paper{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1200px 900px at 20% 10%, rgba(255,255,255,.55), transparent 60%),
+    radial-gradient(900px 700px at 80% 20%, rgba(255,255,255,.35), transparent 55%),
+    radial-gradient(700px 700px at 40% 90%, rgba(0,0,0,.05), transparent 60%),
+    linear-gradient(180deg, var(--paper), var(--paper-2));
+}
+.paper::after{
+  content:"";
+  position: absolute;
+  inset: 0;
+  opacity: .18;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(0,0,0,.06) 0.5px, transparent 0.6px),
+    radial-gradient(circle at 70% 60%, rgba(0,0,0,.06) 0.5px, transparent 0.6px),
+    radial-gradient(circle at 30% 80%, rgba(0,0,0,.06) 0.5px, transparent 0.6px);
+  background-size: 22px 22px, 26px 26px, 30px 30px;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.canvas{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+/* Left floating tool dock (pin + peek) */
+.dock{
+  position: absolute;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, var(--dock), var(--dock-2));
+  border: 1px solid var(--dock-border);
+  box-shadow: var(--dock-shadow);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dockLeft{
+  left: 16px;
+  top: 16px;
+  bottom: 16px;
+  /* slightly wider so selects/sliders don't truncate */
+  width: 118px;
+  transition: transform 180ms ease;
+  transform: translateX(0);
+}
+
+.dockLeft.closed{
+  /* leave a small tab visible */
+  transform: translateX(calc(-100% + 14px));
+}
+
+.dockHandle{
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.22);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  margin: 2px auto 6px;
+}
+
+.dockHandle:hover{ background: rgba(255,255,255,.10); }
+
+.chev{
+  display: inline-block;
+  color: rgba(255,255,255,.85);
+  transform: rotate(180deg);
+  transition: transform 180ms ease;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.chev.open{ transform: rotate(0deg); }
+
+.dockTab{
+  margin-top: auto;
+  display: grid;
+  place-items: center;
+  padding: 10px 0 4px;
+  opacity: .75;
+}
+
+.dockTabDot{
+  width: 6px;
+  height: 40px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.24);
+}
+
+/* Edge hotspots used only when dock is unpinned + collapsed */
+.edgeHotspot{
+  position: absolute;
+  z-index: 30;
+}
+
+.edgeHotspot.left{
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+}
+
+.edgeHotspot.bottom{
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 14px;
+}
+
+/* Top-right actions pill */
+.actions{
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, var(--dock), var(--dock-2));
+  border: 1px solid var(--dock-border);
+  box-shadow: 0 14px 34px rgba(0,0,0,.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.actions .iconBtn{
+  width: 54px;
+  height: 48px;
+  border-radius: 16px;
+}
+
+.dockGroup{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.dockDivider{
+  height: 1px;
+  width: 100%;
+  background: rgba(255,255,255,.10);
+  margin: 2px 0;
+}
+
+.iconBtn{
+  width: 70px;
+  height: 62px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.20);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: transform .08s ease, background .12s ease, border-color .12s ease;
+}
+
+.iconBtn:hover{
+  background: rgba(255,255,255,.10);
+  border-color: rgba(255,255,255,.18);
+  transform: translateY(-1px);
+}
+
+.iconBtn.active{
+  background: rgba(255,255,255,.16);
+  border-color: rgba(255,255,255,.26);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 10px 22px rgba(0,0,0,.25);
+}
+
+.iconBtn:disabled{
+  opacity: .38;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Dock settings */
+.dockSettings{
+  gap: 12px;
+}
+
+.miniLabel{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.miniTitle{
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.62);
+}
+
+.miniValue{
+  font-size: 12px;
+  color: rgba(255,255,255,.80);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+}
+
+.miniSelect{
+  width: 100%;
+  border-radius: 14px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.22);
+  color: rgba(255,255,255,.92);
+  outline: none;
+}
+
+.miniSelect:disabled{
+  opacity: .45;
+}
+
+.colorWell{
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.20);
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Make color input look like a tool well */
+.colorWell::-webkit-color-swatch-wrapper{
+  padding: 0;
+}
+.colorWell::-webkit-color-swatch{
+  border: none;
+  border-radius: 12px;
+}
+
+.sizeSlider{
+  width: 100%;
+  accent-color: rgba(255,255,255,.75);
+}
+
+
+.kbd{
+  display:inline-block;
+  padding: 2px 6px;
+  border: 1px solid rgba(0,0,0,.12);
+  border-bottom-width: 2px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.85);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+  font-size: 12px;
+  color: rgba(0,0,0,.72);
+}
+
+@media (max-width: 820px){
+  .dock{
+    width: 84px;
+  }
+  .iconBtn{ width: 62px; height: 56px; border-radius: 16px; }
+}
+
+
+.dockPanel{
+  margin-top: 12px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.20);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panelTitle{
+  color: rgba(255,255,255,.72);
+  font-size: 12px;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+  margin: 2px 0 4px;
+}
+
+.panelField{
+  display: grid;
+  /* label | control | value */
+  grid-template-columns: 52px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+}
+
+.panelLabel{
+  color: rgba(255,255,255,.72);
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.panelSelect{
+  width: 100%;
+  border-radius: 14px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.22);
+  color: rgba(255,255,255,.92);
+  outline: none;
+}
+
+.panelColor{
+  width: 44px;
+  height: 32px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.20);
+  padding: 0;
+  cursor: pointer;
+}
+.panelColor::-webkit-color-swatch-wrapper{ padding: 0; }
+.panelColor::-webkit-color-swatch{ border: none; border-radius: 10px; }
+
+.panelSlider{
+  width: 100%;
+  accent-color: rgba(255,255,255,.80);
+}
+
+.panelValue{
+  min-width: 50px;
+  text-align: right;
+  color: rgba(255,255,255,.85);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+  font-size: 12px;
+}
+
+.panelRow{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panelMeta{
+  color: rgba(255,255,255,.75);
+  font-size: 13px;
+}
