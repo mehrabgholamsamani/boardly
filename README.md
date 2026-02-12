@@ -6,8 +6,8 @@ A modern interactive whiteboard built with **React + TypeScript** and powered by
 
 ## 📸 Screenshots
 
-![Drawing Demo](./screenshots/demo1.png)
-![Shapes Demo](./screenshots/demo2.png)
+![Drawing Demo](./screenshots/demo2.png)
+![Shapes Demo](./screenshots/demo1.png)
 
 ---
 
