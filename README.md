@@ -5,7 +5,6 @@ A modern interactive whiteboard built with **React + TypeScript** and powered by
 ## 🚀 Live Demo
 
 👉 https://boardly-fawn-sigma.vercel.app/
----
 
 ## 📸 Screenshots
 
