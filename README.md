@@ -2,6 +2,9 @@
 
 A modern interactive whiteboard built with **React + TypeScript** and powered by the **HTML5 Canvas API**. This project focuses on building a scalable drawing engine with a custom UI system, and advanced shape/brush tools from scratch.
 
+## 🚀 Live Demo
+
+👉 https://boardly-fawn-sigma.vercel.app/
 ---
 
 ## 📸 Screenshots
